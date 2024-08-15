@@ -1,18 +1,10 @@
-import { useState } from "react";
-import useGameLoop from "./hooks/useGameLoop";
+import React from "react";
+import usePlayerMovement from "./hooks/usePlayerMovement";
 
-export default function App() {
-  const [playerPosition, setPlayerPosition] = useState({ x: 50, y: 50 });
-
-  const handleGameLoop = () => {
-    // Example logic to move the player (this will be expanded later)
-    setPlayerPosition((prev) => ({
-      x: prev.x + 1,
-      y: prev.y + 1,
-    }));
-  };
-
-  useGameLoop(handleGameLoop);
+const App: React.FC = () => {
+  const initialPosition = { x: 50, y: 50 };
+  const speed = 5;
+  const playerPosition = usePlayerMovement(initialPosition, speed);
 
   return (
     <div
@@ -29,10 +21,12 @@ export default function App() {
           height: "20px",
           background: "red",
           position: "absolute",
-          left: playerPosition.x,
-          top: playerPosition.y,
+          left: `${playerPosition.x}px`,
+          top: `${playerPosition.y}px`,
         }}
       />
     </div>
   );
-}
+};
+
+export default App;
