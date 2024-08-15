@@ -1,9 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-
-interface Position {
-  x: number;
-  y: number;
-}
+import { Position } from "../types";
 
 type MovementKey = "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight" | "w" | "a" | "s" | "d";
 

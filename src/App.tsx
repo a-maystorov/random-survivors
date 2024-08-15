@@ -1,13 +1,18 @@
 import React from "react";
+import Player from "./entities/Player";
 import useGameLoop from "./hooks/useGameLoop";
 import usePlayerMovement from "./hooks/usePlayerMovement";
 
 const App: React.FC = () => {
-  const initialPosition = { x: 50, y: 50 };
-  const speed = 5;
-  const { playerPosition, updatePosition } = usePlayerMovement(initialPosition, speed);
+  const player = new Player(400, 300, 5);
+  const { playerPosition, updatePosition } = usePlayerMovement(
+    player.initialPosition,
+    player.speed
+  );
 
-  useGameLoop(updatePosition);
+  useGameLoop(() => {
+    updatePosition();
+  });
 
   return (
     <div
@@ -18,6 +23,7 @@ const App: React.FC = () => {
         position: "relative",
       }}
     >
+      {/* Render Player */}
       <div
         style={{
           width: "20px",
