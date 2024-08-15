@@ -1,20 +1,38 @@
 import { useState } from "react";
+import useGameLoop from "./hooks/useGameLoop";
 
-function App() {
-  const [count, setCount] = useState(0);
+export default function App() {
+  const [playerPosition, setPlayerPosition] = useState({ x: 50, y: 50 });
+
+  const handleGameLoop = () => {
+    // Example logic to move the player (this will be expanded later)
+    setPlayerPosition((prev) => ({
+      x: prev.x + 1,
+      y: prev.y + 1,
+    }));
+  };
+
+  useGameLoop(handleGameLoop);
 
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
+    <div
+      style={{
+        width: "800px",
+        height: "600px",
+        background: "#333",
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          width: "20px",
+          height: "20px",
+          background: "red",
+          position: "absolute",
+          left: playerPosition.x,
+          top: playerPosition.y,
+        }}
+      />
+    </div>
   );
 }
-
-export default App;
