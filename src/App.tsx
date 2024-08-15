@@ -1,10 +1,13 @@
 import React from "react";
+import useGameLoop from "./hooks/useGameLoop";
 import usePlayerMovement from "./hooks/usePlayerMovement";
 
 const App: React.FC = () => {
   const initialPosition = { x: 50, y: 50 };
   const speed = 5;
-  const playerPosition = usePlayerMovement(initialPosition, speed);
+  const { playerPosition, updatePosition } = usePlayerMovement(initialPosition, speed);
+
+  useGameLoop(updatePosition);
 
   return (
     <div
