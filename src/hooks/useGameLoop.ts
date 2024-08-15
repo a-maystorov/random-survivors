@@ -1,6 +1,19 @@
 import { useEffect, useRef } from "react";
 
-const useGameLoop = (callback: () => void, fps: number = 60) => {
+/**
+ * Custom hook that manages a game loop by repeatedly calling the provided callback function.
+ *
+ * @param callback - The function to be called on each frame of the game loop.
+ * @param fps - The desired frames per second (FPS) for the game loop. Defaults to 60 FPS.
+ *
+ * @returns void
+ *
+ * @example
+ * useGameLoop(() => {
+ *   // Update game state or perform actions on each frame
+ * });
+ */
+const useGameLoop = (callback: () => void, fps: number = 60): void => {
   const requestRef = useRef<number>();
   const previousTimeRef = useRef<number>();
 
