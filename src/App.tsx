@@ -1,21 +1,16 @@
 import React from "react";
-import Player from "./entities/Player";
 import useGameLoop from "./hooks/useGameLoop";
-import usePlayerMovement from "./hooks/usePlayerMovement";
+import usePlayer from "./hooks/usePlayer";
 import useEnemies from "./hooks/useEnemies";
 
 const App: React.FC = () => {
-  const player = new Player(400, 300, 5);
-  const { playerPositionRef, updatePlayerPosition } = usePlayerMovement(
-    player.initialPosition,
-    player.speed
-  );
+  const { playerRef, updatePlayerPosition } = usePlayer();
   const { enemies, spawnEnemy, moveEnemies } = useEnemies();
 
   useGameLoop(() => {
     updatePlayerPosition();
     spawnEnemy();
-    moveEnemies(playerPositionRef.current);
+    moveEnemies(playerRef.current.position);
   });
 
   return (
@@ -34,8 +29,8 @@ const App: React.FC = () => {
           height: "20px",
           background: "red",
           position: "absolute",
-          left: `${playerPositionRef.current.x}px`,
-          top: `${playerPositionRef.current.y}px`,
+          left: `${playerRef.current.position.x}px`,
+          top: `${playerRef.current.position.y}px`,
         }}
       />
 
