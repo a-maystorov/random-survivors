@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Position } from "../types";
 
 type MovementKey = "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight" | "w" | "a" | "s" | "d";
 
 /**
- * Updates the player's position based on the movement key pressed.
+ * Calculates the new position of the player based on the direction key pressed.
  *
- * @param key - The key pressed by the user for movement.
+ * @param key - The key pressed by the user to move the player.
  * @param prev - The previous position of the player.
  * @param speed - The speed at which the player should move.
  * @returns The new position of the player after applying movement.
@@ -31,22 +31,26 @@ const getNewPosition = (key: MovementKey, prev: Position, speed: number): Positi
 };
 
 /**
- * Custom hook to manage player movement in a 2D space.
+ * Custom hook to manage the player's movement in a 2D space.
  *
  * @param initialPosition - The starting position of the player as an object with `x` and `y` coordinates.
  * @param speed - The speed at which the player should move with each key press.
- * @returns An object containing the player's current position, and a function to update the position.
+ * @returns An object containing a reference to the player's current position (`playerPositionRef`),
+ *          and a function to update the player's position (`updatePlayerPosition`).
+ *
+ * @example
+ * const { playerPositionRef, updatePlayerPosition } = usePlayerMovement({ x: 0, y: 0 }, 5);
+ *
+ * useGameLoop(() => {
+ *   updatePlayerPosition();
+ * });
  */
 const usePlayerMovement = (initialPosition: Position, speed: number) => {
-  const [playerPosition, setPlayerPosition] = useState<Position>(initialPosition);
+  const playerPositionRef = useRef<Position>(initialPosition);
   const directionRef = useRef<MovementKey | null>(null);
 
   /**
    * Handles keydown events and updates the direction based on the key pressed.
-   *
-   * @remarks
-   * This function sets the directionRef to the key pressed, allowing the game loop to update the player's position
-   * based on this direction.
    *
    * @param event - The keyboard event triggered by the user's key press.
    */
@@ -60,10 +64,6 @@ const usePlayerMovement = (initialPosition: Position, speed: number) => {
   /**
    * Handles keyup events and clears the direction when the key is released.
    *
-   * @remarks
-   * This function checks if the key released matches the current directionRef. If so, it sets directionRef to null,
-   * stopping the movement in that direction. This helps prevent unintended stops during rapid direction changes.
-   *
    * @param event - The keyboard event triggered by the user's key release.
    */
   const handleKeyUp = (event: KeyboardEvent): void => {
@@ -76,19 +76,13 @@ const usePlayerMovement = (initialPosition: Position, speed: number) => {
   };
 
   /**
-   * Updates the player's position based on the current direction.
-   *
-   * @remarks
-   * This function is intended to be called within a game loop. It updates the player's position using the
-   * latest direction stored in directionRef.
+   * Updates the player's position based on the current direction stored in `directionRef`.
+   * Intended to be called within a game loop to continuously update the player's position.
    */
-  const updatePosition = (): void => {
+  const updatePlayerPosition = (): void => {
     const direction = directionRef.current;
     if (direction) {
-      setPlayerPosition((prev) => {
-        const newPosition = getNewPosition(direction, prev, speed);
-        return newPosition;
-      });
+      playerPositionRef.current = getNewPosition(direction, playerPositionRef.current, speed);
     }
   };
 
@@ -102,7 +96,7 @@ const usePlayerMovement = (initialPosition: Position, speed: number) => {
     };
   }, []);
 
-  return { playerPosition, updatePosition };
+  return { playerPositionRef, updatePlayerPosition };
 };
 
 export default usePlayerMovement;
