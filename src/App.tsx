@@ -1,40 +1,21 @@
-import React, { useRef, useState } from "react";
-import Enemy from "./entities/Enemy";
+import React from "react";
 import Player from "./entities/Player";
 import useGameLoop from "./hooks/useGameLoop";
 import usePlayerMovement from "./hooks/usePlayerMovement";
+import useEnemies from "./hooks/useEnemies";
 
 const App: React.FC = () => {
-  // Initialize player
-  const player = new Player(400, 300);
+  const player = new Player(400, 300, 5);
   const { playerPositionRef, updatePlayerPosition } = usePlayerMovement(
     player.initialPosition,
     player.speed
   );
+  const { enemies, spawnEnemy, moveEnemies } = useEnemies();
 
-  // State to hold the enemies
-  const [enemies, setEnemies] = useState<Enemy[]>([]);
-  const enemiesRef = useRef<Enemy[]>([]); // To directly manipulate enemies
-
-  // Game loop
   useGameLoop(() => {
     updatePlayerPosition();
-
-    // Spawning logic (e.g., 1% chance per frame to spawn an enemy)
-    if (Math.random() < 0.01) {
-      const x = Math.random() * 800;
-      const y = Math.random() * 600;
-      const newEnemy = new Enemy(x, y);
-      enemiesRef.current.push(newEnemy);
-    }
-
-    // Move each enemy towards the player
-    enemiesRef.current.forEach((enemy) => {
-      enemy.moveTowards(playerPositionRef.current.x, playerPositionRef.current.y);
-    });
-
-    // Trigger a re-render to update enemy positions
-    setEnemies([...enemiesRef.current]);
+    spawnEnemy();
+    moveEnemies(playerPositionRef.current);
   });
 
   return (
