@@ -1,20 +1,23 @@
 import React from "react";
+import useCamera from "./hooks/useCamera";
+import useEnemies from "./hooks/useEnemies";
 import useGameLoop from "./hooks/useGameLoop";
 import usePlayer from "./hooks/usePlayer";
-import useEnemies from "./hooks/useEnemies";
-import useCamera from "./hooks/useCamera";
-import { PLAY_AREA_HEIGHT, PLAY_AREA_WIDTH } from "./constants";
 
 const App: React.FC = () => {
   const viewportWidth = 800;
   const viewportHeight = 600;
 
   const { playerRef, updatePlayerPosition } = usePlayer();
-  const { enemies, spawnEnemy, moveEnemies } = useEnemies(playerRef, viewportWidth, viewportHeight);
   const { cameraPositionRef, updateCameraPosition } = useCamera(
     playerRef,
     viewportWidth,
     viewportHeight
+  );
+  const { enemies, spawnEnemy, moveEnemies } = useEnemies(
+    viewportWidth,
+    viewportHeight,
+    cameraPositionRef
   );
 
   useGameLoop(() => {
@@ -27,45 +30,47 @@ const App: React.FC = () => {
   return (
     <div
       style={{
-        width: `${viewportWidth}px`,
-        height: `${viewportHeight}px`,
-        overflow: "hidden",
-        position: "relative",
-        background: "#333",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        backgroundColor: "#f0f0f0",
       }}
     >
       <div
         style={{
-          width: `${PLAY_AREA_WIDTH}px`,
-          height: `${PLAY_AREA_HEIGHT}px`,
-          position: "absolute",
-          top: `-${cameraPositionRef.current.y}px`,
-          left: `-${cameraPositionRef.current.x}px`,
+          width: `${viewportWidth}px`,
+          height: `${viewportHeight}px`,
+          overflow: "hidden",
+          position: "relative",
+          backgroundImage: "url('/src/assets/terrain.png')",
+          backgroundRepeat: "repeat",
+          backgroundPosition: `${-cameraPositionRef.current.x}px ${-cameraPositionRef.current.y}px`,
         }}
       >
-        {/* Render Player */}
+        {/* Render player */}
         <div
           style={{
-            width: "20px",
-            height: "20px",
-            background: "red",
             position: "absolute",
-            left: `${playerRef.current.position.x}px`,
-            top: `${playerRef.current.position.y}px`,
+            width: "30px",
+            height: "30px",
+            backgroundColor: "blue",
+            left: `${playerRef.current.position.x - cameraPositionRef.current.x}px`,
+            top: `${playerRef.current.position.y - cameraPositionRef.current.y}px`,
           }}
         />
 
-        {/* Render Enemies */}
+        {/* Render enemies */}
         {enemies.map((enemy, index) => (
           <div
             key={index}
             style={{
-              width: "20px",
-              height: "20px",
-              background: "green",
               position: "absolute",
-              left: `${enemy.position.x}px`,
-              top: `${enemy.position.y}px`,
+              width: "30px",
+              height: "30px",
+              backgroundColor: "red",
+              left: `${enemy.position.x - cameraPositionRef.current.x}px`,
+              top: `${enemy.position.y - cameraPositionRef.current.y}px`,
             }}
           />
         ))}

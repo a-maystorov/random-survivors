@@ -1,17 +1,20 @@
 import { useRef } from "react";
 import Player from "../entities/Player";
 import { Position } from "../types";
-import { PLAY_AREA_WIDTH, PLAY_AREA_HEIGHT } from "../constants";
 
 /**
- * Custom hook to manage the camera position, following the player.
+ * Custom hook to manage the camera position, ensuring it follows the player.
  *
- * The camera keeps the player centered (or nearly centered) in the viewport while they move within a larger play area.
+ * This hook dynamically adjusts the camera's position to keep the player
+ * centered within the viewport as they move. By not restricting the camera
+ * movement within specific boundaries, the map gives an illusion of being infinite.
  *
- * @param playerRef - A reference to the Player instance.
- * @param viewportWidth - The width of the viewport (visible area).
- * @param viewportHeight - The height of the viewport (visible area).
- * @returns The current position of the camera.
+ * @param playerRef - A reference to the Player instance, used to track the player's position.
+ * @param viewportWidth - The width of the viewport (visible area), used to calculate the camera's horizontal position.
+ * @param viewportHeight - The height of the viewport (visible area), used to calculate the camera's vertical position.
+ * @returns {Object} The returned object contains:
+ * - `cameraPositionRef`: A reference to the current camera position, which updates based on the player's movement.
+ * - `updateCameraPosition`: A function that recalculates and updates the camera's position, keeping the player centered.
  */
 const useCamera = (
   playerRef: React.RefObject<Player>,
@@ -23,17 +26,17 @@ const useCamera = (
     y: playerRef.current!.position.y - viewportHeight / 2,
   });
 
+  /**
+   * Updates the camera position to keep the player centered in the viewport.
+   *
+   * This function recalculates the camera's position based on the player's current
+   * position, ensuring the player remains in the center of the visible area.
+   */
   const updateCameraPosition = (): void => {
     const playerPosition = playerRef.current!.position;
     cameraPositionRef.current = {
-      x: Math.max(
-        0,
-        Math.min(PLAY_AREA_WIDTH - viewportWidth, playerPosition.x - viewportWidth / 2)
-      ),
-      y: Math.max(
-        0,
-        Math.min(PLAY_AREA_HEIGHT - viewportHeight, playerPosition.y - viewportHeight / 2)
-      ),
+      x: playerPosition.x - viewportWidth / 2,
+      y: playerPosition.y - viewportHeight / 2,
     };
   };
 
