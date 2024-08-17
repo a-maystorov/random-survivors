@@ -10,7 +10,7 @@ const App: React.FC = () => {
   const viewportHeight = 600;
 
   const { playerRef, updatePlayerPosition } = usePlayer();
-  const { enemies, spawnEnemy, moveEnemies } = useEnemies();
+  const { enemies, spawnEnemy, moveEnemies } = useEnemies(playerRef, viewportWidth, viewportHeight);
   const { cameraPositionRef, updateCameraPosition } = useCamera(
     playerRef,
     viewportWidth,
