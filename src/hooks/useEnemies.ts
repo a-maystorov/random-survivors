@@ -1,14 +1,15 @@
 import { useRef, useState } from "react";
 import Enemy from "../entities/Enemy";
+import Player from "../entities/Player";
 import { Position } from "../types";
 
 /**
  * Custom hook to manage enemy entities within the game.
  *
- * This hook handles the spawning and movement of enemies. Enemies
- * are spawned relative to the current camera position to create an
- * effect of an infinite map. The enemies move towards the player's
- * current position, creating a dynamic challenge for the player.
+ * This hook handles the spawning, movement, and collision detection of enemies.
+ * Enemies are spawned relative to the current camera position to create an
+ * effect of an infinite map. The enemies move towards the player's current
+ * position, creating a dynamic challenge for the player.
  *
  * @param viewportWidth - The width of the viewport (visible area). Used to determine enemy spawn locations.
  * @param viewportHeight - The height of the viewport (visible area). Used to determine enemy spawn locations.
@@ -17,7 +18,7 @@ import { Position } from "../types";
  * @returns {Object} The returned object contains:
  * - `enemies`: An array of current enemy entities.
  * - `spawnEnemy`: A function to randomly spawn an enemy relative to the camera position.
- * - `moveEnemies`: A function to move all enemies towards the player's current position.
+ * - `moveEnemies`: A function to move all enemies towards the player's current position and handle collisions.
  */
 const useEnemies = (
   viewportWidth: number,
@@ -59,22 +60,32 @@ const useEnemies = (
           break;
       }
 
-      const newEnemy = new Enemy(spawnX, spawnY);
+      const newEnemy = new Enemy(spawnX, spawnY); // Using default width, height, and speed from the constants
       enemiesRef.current.push(newEnemy);
       setEnemies([...enemiesRef.current]);
     }
   };
 
   /**
-   * Moves all spawned enemies towards the player's current position.
+   * Moves all spawned enemies towards the player's current position and checks for collisions.
    *
-   * @param playerPosition - The current position of the player. Used as the target for enemy movement.
+   * @param player - The player object to check collisions with.
+   * @returns {boolean} `true` if a collision was detected, otherwise `false`.
    */
-  const moveEnemies = (playerPosition: Position): void => {
+  const moveEnemies = (player: Player): boolean => {
+    let collisionDetected = false;
+
     enemiesRef.current.forEach((enemy) => {
-      enemy.moveTowards(playerPosition.x, playerPosition.y);
+      enemy.moveTowards(player.position.x, player.position.y);
+
+      if (enemy.isCollidingWith(player)) {
+        collisionDetected = true;
+        player.takeDamage(10); // Reduce player health by 10 on collision
+      }
     });
+
     setEnemies([...enemiesRef.current]); // Trigger a re-render to update enemy positions
+    return collisionDetected;
   };
 
   return { enemies, spawnEnemy, moveEnemies };

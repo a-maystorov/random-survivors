@@ -1,0 +1,14 @@
+export const PLAYER_DEFAULTS = {
+  POSITION_X: 400,
+  POSITION_Y: 300,
+  WIDTH: 30,
+  HEIGHT: 30,
+  SPEED: 5,
+  HEALTH: 100,
+};
+
+export const ENEMY_DEFAULTS = {
+  WIDTH: 30,
+  HEIGHT: 30,
+  SPEED: 1,
+};

@@ -3,6 +3,7 @@ import useCamera from "./hooks/useCamera";
 import useEnemies from "./hooks/useEnemies";
 import useGameLoop from "./hooks/useGameLoop";
 import usePlayer from "./hooks/usePlayer";
+import { PLAYER_DEFAULTS } from "./constants";
 
 const App: React.FC = () => {
   const viewportWidth = 800;
@@ -20,11 +21,15 @@ const App: React.FC = () => {
     cameraPositionRef
   );
 
-  useGameLoop(() => {
-    updatePlayerPosition();
+  useGameLoop((deltaTime) => {
+    updatePlayerPosition(deltaTime);
     updateCameraPosition();
     spawnEnemy();
-    moveEnemies(playerRef.current.position);
+    moveEnemies(playerRef.current);
+
+    if (!playerRef.current.isAlive()) {
+      console.log("Player is dead!");
+    }
   });
 
   return (
@@ -35,6 +40,7 @@ const App: React.FC = () => {
         alignItems: "center",
         height: "100vh",
         backgroundColor: "#f0f0f0",
+        position: "relative",
       }}
     >
       <div
@@ -52,8 +58,8 @@ const App: React.FC = () => {
         <div
           style={{
             position: "absolute",
-            width: "30px",
-            height: "30px",
+            width: `${PLAYER_DEFAULTS.WIDTH}px`,
+            height: `${PLAYER_DEFAULTS.HEIGHT}px`,
             backgroundColor: "blue",
             left: `${playerRef.current.position.x - cameraPositionRef.current.x}px`,
             top: `${playerRef.current.position.y - cameraPositionRef.current.y}px`,
@@ -66,14 +72,28 @@ const App: React.FC = () => {
             key={index}
             style={{
               position: "absolute",
-              width: "30px",
-              height: "30px",
+              width: `${enemy.width}px`,
+              height: `${enemy.height}px`,
               backgroundColor: "red",
               left: `${enemy.position.x - cameraPositionRef.current.x}px`,
               top: `${enemy.position.y - cameraPositionRef.current.y}px`,
             }}
           />
         ))}
+
+        {/* Display player's health as text */}
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            color: "white",
+            fontSize: "20px",
+            fontFamily: "Arial, sans-serif",
+          }}
+        >
+          Health: {playerRef.current.health}
+        </div>
       </div>
     </div>
   );

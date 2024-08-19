@@ -3,28 +3,28 @@ import Player from "../entities/Player";
 import { MovementKey } from "../types";
 
 /**
- * A custom hook that manages the player's state, including position and movement,
+ * A custom hook that manages the player's state, including position, movement, health, and invincibility,
  * using an instance of the Player class.
  *
  * This hook handles keyboard input to update the player's direction and position in a 2D space.
- * It listens for keydown and keyup events to track the direction in which the player is moving
- * and updates the player's position accordingly on each game loop iteration.
+ * It also manages the player's invincibility status, preventing the player from taking damage too rapidly.
+ * The player's position and invincibility state are updated on each game loop iteration.
  *
  * @returns {Object}
- * - `playerRef`: A reference to the Player instance, containing the player's current position.
- * - `updatePlayerPosition`: A function that updates the player's position based on the current direction.
+ * - `playerRef`: A reference to the Player instance, containing the player's current state (position, health, invincibility, etc.).
+ * - `updatePlayerPosition`: A function that updates the player's position and manages the invincibility state based on the current direction and deltaTime.
  *
  * @example
  * const { playerRef, updatePlayerPosition } = usePlayer();
  *
- * useGameLoop(() => {
- *   updatePlayerPosition();
+ * useGameLoop((deltaTime) => {
+ *   updatePlayerPosition(deltaTime);
  *   console.log(playerRef.current.position); // Logs the current player position
  * });
  */
 const usePlayer = () => {
-  const playerRef = useRef(new Player(400, 300)); // Initialize the player with default position
-  const directionRef = useRef<MovementKey | null>(null); // Track the current movement direction
+  const playerRef = useRef(new Player());
+  const directionRef = useRef<MovementKey | null>(null);
 
   /**
    * Handles the keydown event to update the player's movement direction.
@@ -51,15 +51,19 @@ const usePlayer = () => {
   };
 
   /**
-   * Updates the player's position based on the current direction.
+   * Updates the player's position based on the current direction and manages the invincibility state.
    *
-   * This function should be called within a game loop to continuously update the player's position.
+   * This function should be called within a game loop to continuously update the player's position
+   * and manage the invincibility timer, preventing rapid successive damage.
+   *
+   * @param {number} deltaTime - The time passed since the last update (in milliseconds).
    */
-  const updatePlayerPosition = (): void => {
+  const updatePlayerPosition = (deltaTime: number): void => {
     const direction = directionRef.current;
     if (direction) {
       playerRef.current.move(direction);
     }
+    playerRef.current.updateInvincibility(deltaTime); // Update the invincibility timer
   };
 
   useEffect(() => {

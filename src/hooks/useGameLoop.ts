@@ -3,17 +3,17 @@ import { useEffect, useRef } from "react";
 /**
  * Custom hook that manages a game loop by repeatedly calling the provided callback function.
  *
- * @param callback - The function to be called on each frame of the game loop.
+ * @param callback - The function to be called on each frame of the game loop. Receives `deltaTime` as an argument.
  * @param fps - The desired frames per second (FPS) for the game loop. Defaults to 60 FPS.
  *
  * @returns void
  *
  * @example
- * useGameLoop(() => {
- *   // Update game state or perform actions on each frame
+ * useGameLoop((deltaTime) => {
+ *   // Update game state or perform actions on each frame, using deltaTime for smooth updates
  * });
  */
-const useGameLoop = (callback: () => void, fps: number = 60): void => {
+const useGameLoop = (callback: (deltaTime: number) => void, fps: number = 60): void => {
   const requestRef = useRef<number>();
   const previousTimeRef = useRef<number>();
 
@@ -22,7 +22,7 @@ const useGameLoop = (callback: () => void, fps: number = 60): void => {
       const deltaTime = time - previousTimeRef.current;
 
       if (deltaTime >= 1000 / fps) {
-        callback();
+        callback(deltaTime);
         previousTimeRef.current = time;
       }
     } else {
