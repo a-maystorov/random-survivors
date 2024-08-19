@@ -8,8 +8,7 @@ import { Position } from "../types";
  *
  * This hook handles the spawning, movement, and collision detection of enemies.
  * Enemies are spawned relative to the current camera position to create an
- * effect of an infinite map. The enemies move towards the player's current
- * position, creating a dynamic challenge for the player.
+ * effect of an infinite map.
  *
  * @param viewportWidth - The width of the viewport (visible area). Used to determine enemy spawn locations.
  * @param viewportHeight - The height of the viewport (visible area). Used to determine enemy spawn locations.
@@ -60,7 +59,7 @@ const useEnemies = (
           break;
       }
 
-      const newEnemy = new Enemy(spawnX, spawnY); // Using default width, height, and speed from the constants
+      const newEnemy = new Enemy(spawnX, spawnY);
       enemiesRef.current.push(newEnemy);
       setEnemies([...enemiesRef.current]);
     }
@@ -80,7 +79,7 @@ const useEnemies = (
 
       if (enemy.isCollidingWith(player)) {
         collisionDetected = true;
-        player.takeDamage(10); // Reduce player health by 10 on collision
+        player.takeDamage(10);
       }
     });
 

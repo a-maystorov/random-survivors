@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
+import { PLAYER_DEFAULTS } from "./constants";
 import useCamera from "./hooks/useCamera";
 import useEnemies from "./hooks/useEnemies";
 import useGameLoop from "./hooks/useGameLoop";
 import usePlayer from "./hooks/usePlayer";
-import { PLAYER_DEFAULTS } from "./constants";
 
 const App: React.FC = () => {
   const viewportWidth = 800;
   const viewportHeight = 600;
+  const [isGameOver, setIsGameOver] = useState(false);
 
   const { playerRef, updatePlayerPosition } = usePlayer();
   const { cameraPositionRef, updateCameraPosition } = useCamera(
@@ -21,7 +22,7 @@ const App: React.FC = () => {
     cameraPositionRef
   );
 
-  useGameLoop((deltaTime) => {
+  const stopLoop = useGameLoop((deltaTime) => {
     updatePlayerPosition(deltaTime);
     updateCameraPosition();
     spawnEnemy();
@@ -29,8 +30,14 @@ const App: React.FC = () => {
 
     if (!playerRef.current.isAlive()) {
       console.log("Player is dead!");
+      setIsGameOver(true);
+      stopLoop();
     }
   });
+
+  const handlePlayAgain = () => {
+    window.location.reload(); // For now refresh the browser window to restart the game.
+  };
 
   return (
     <div
@@ -54,7 +61,6 @@ const App: React.FC = () => {
           backgroundPosition: `${-cameraPositionRef.current.x}px ${-cameraPositionRef.current.y}px`,
         }}
       >
-        {/* Render player */}
         <div
           style={{
             position: "absolute",
@@ -66,7 +72,6 @@ const App: React.FC = () => {
           }}
         />
 
-        {/* Render enemies */}
         {enemies.map((enemy, index) => (
           <div
             key={index}
@@ -81,7 +86,6 @@ const App: React.FC = () => {
           />
         ))}
 
-        {/* Display player's health as text */}
         <div
           style={{
             position: "absolute",
@@ -94,6 +98,43 @@ const App: React.FC = () => {
         >
           Health: {playerRef.current.health}
         </div>
+
+        {isGameOver && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+              color: "white",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              fontSize: "48px",
+              fontFamily: "Arial, sans-serif",
+            }}
+          >
+            <div>Game Over</div>
+            <button
+              onClick={handlePlayAgain}
+              style={{
+                marginTop: "20px",
+                padding: "10px 20px",
+                fontSize: "24px",
+                backgroundColor: "#fff",
+                color: "#000",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              Play Again
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
