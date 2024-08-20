@@ -1,0 +1,16 @@
+.gameContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+  position: relative;
+}
+
+.gameArea {
+  width: 800px;
+  height: 600px;
+  overflow: hidden;
+  position: relative;
+  background-repeat: repeat;
+}
